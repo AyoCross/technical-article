@@ -1,1 +1,0 @@
-# python 字典dictionary是线程安全/进程安全
