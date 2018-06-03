@@ -5,7 +5,7 @@
 ---
 去年的一个django项目中，使用了memcache作为系统缓存，并实现多台机器上的缓存共享。配置的cache如下图所示：
 
-![django settings](https://raw.githubusercontent.com/AyoCross/usual_pics/master/django%20memcache/memcache_set.png "")
+![django settings](https://raw.githubusercontent.com/AyoCross/usual_pics/master/django%20memcache/settings_cache.png "")
 
 最近在项目调试过程中，发现memcache在进行缓存时，使用的key并不是实际写入的key，一度我还以为是不是缓存的位置出BUG了。。想找下到底是存的是什么key：
 
