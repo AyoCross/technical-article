@@ -1,5 +1,11 @@
 # 亚马逊云EC2搭建SS科学上网
 
+#### 更新说明：
+```
+1. 修正原教程中使用config文件配置方式不规范的问题 20190122
+2. 增加服务器版本推荐
+```
+
 作为一个程序猿，如果开发过程中不能使用Stack Overflow或者Google来查问题，那么解决BUG的能力会瞬间降低好几个层次。
 毕竟中文互联网比起英文还是范围少很多。虽然CSDN、博客园，以及其他独立的博客也能提供很多解决问题的思路，但是很多也都是直接翻译的Stack Overflow原文。
 
@@ -11,6 +17,8 @@
 
 1. 首先你得先获取服务器----这不废话么。。具体的申请流程百度一大堆，先登陆亚马逊账户，绑定一个信用卡，然后就是一步一步往下来。需要注意的点：  亚马逊的服务器提供了多个节点，有美国的/欧洲的/东南亚的等等，我选择的是位于新加坡的节点，ping较低，而且我也只是为了上Google，如果你还有其他需求的话，可以自行选择节点； 服务器的系统看你喜好，我用的是Ubuntu，你选Debian或者CentOS也行，没啥大的区别。
 2. 获取服务器后，登录到服务器（可以使用SSH工具使用Xshell5或者MobaXterm都行），开始安装SS转发工具。可以看[这位的GitHub](https://github.com/RockerFlower/shadowsocks "")，里面也有具体的安装方法。因为GitHub在国内不稳定，经常打不开，你需要多试几次。或者你就直接看我下面的方法也行。。：
+
+**注意**：推荐使用Ubuntu14.04版本，最新版本18.04测试异常，原因未知。。。
 
 Debian/Ubuntu
 ```bash
@@ -27,11 +35,11 @@ pip install shadowsocks
 ```bash
 ssserver -p 443 -k password -m aes-256-cfb
 ```
-当然，你肯定不想一直开着终端，关掉终端之后服务器就关了那就没意思了。后台运行：
+~~当然，你肯定不想一直开着终端，关掉终端之后服务器就关了那就没意思了。后台运行：~~
 ```bash
 sudo ssserver -p 443 -k password -m aes-256-cfb --user nobody -d start
 ```
-关闭服务：
+~~关闭服务：~~
 ```bash
 sudo ssserver -d stop
 ```
@@ -45,20 +53,32 @@ sudo less /var/log/shadowsocks.log
 
 -----------
 
-配置你的配置文件。
-配置文件位置默认是位于：/etc目录下，shadowsocks.json文件，当然，也有其他版本位于/etc/shadowsocks/shadowsocks.json。你都试试。
-以下为示例，server监听IP,0.0.0.0为监听所有IP；端口号和密码你自己设定。
+**配置你的配置文件**
+
+配置文件位置默认是位于：/etc/shadowsocks.json文件
+
+sudo vim /etc/shadowsocks.json
+
+以下为示例格式，server监听IP,**0.0.0.0**为监听所有IP；端口号和密码你自己设定。
 ```json
 {
     "server": "0.0.0.0",
     "port_password": {
         "8888": "123qwe456",
+        "8889": "123456"
     },
     "timeout": 300,
     "method": "aes-256-cfb"
 }
 
 ```
+配置完成之后，以你的配置文件来后台开启或关闭ss，则需要：
+```bash
+sudo ssserver -c /etc/shadowsocks.json -d start  后台启动SS服务
+sudo ssserver -c /etc/shadowsocks.json -d stop   关闭SS服务
+```
+
+
 **要注意的是**：端口号设定之后，要在亚马逊的服务器管理界面，把该端口设为白名单（创建安全组，协议规为自定义TCP规则），不然防火墙直接给拦下了。
 而且在安全组里面你还可以限定IP（如果你上网位置固定的话，强烈推荐），只允许从你的IP进行访问，防止有人暴力破解你的服务器，或者GFW嗅探你的SS。。。嘿嘿嘿
 
